@@ -1,1 +1,2 @@
-# pwshGitShortcut
+##### ひつようなもの
+- Fzf
