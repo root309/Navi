@@ -13,7 +13,7 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
     let graph_lines = git_functions::get_git_tree_graph();
     // セッション生成
     execute!(stdout(), Clear(ClearType::All)).unwrap();
-    let padding = 45;
+    let padding = 45; // 樹形図のpadding
     for line in &graph_lines {
         print!("{:padding$}", "", padding = padding);
         println!("{}", line);
@@ -56,11 +56,15 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
 fn display_branches(branches: &Vec<String>, current_selection: usize) {
     // ターミナルのサイズを取得
     let (width, height) = crossterm::terminal::size().unwrap();
+    let box_width = 40;
     let list_start_y = (height - branches.len() as u16 - 2).max(0); // 2は上下の罫線の分
+
     // Boxの色変更
-    execute!(stdout(), cursor::MoveTo(0, list_start_y + 1),SetForegroundColor(Color::Blue)).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, list_start_y + 1), SetForegroundColor(Color::Blue)).unwrap();
+    // "Branch List"の表示
+    execute!(stdout(), cursor::MoveTo(1, list_start_y - 1), Print("Branch List")).unwrap();
     // ボックスの上端を描画
-    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(width as usize - 2)), Print("┐")).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(box_width - 2)), Print("┐")).unwrap();
     for (index, branch) in branches.iter().enumerate() {
         // ボックスの左端
         execute!(stdout(), cursor::MoveTo(0, list_start_y + 1 + index as u16), Print("│")).unwrap();
@@ -70,11 +74,11 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
             print!("  {}. {}", index + 1, branch);
         }
         // ボックスの右端
-        execute!(stdout(), cursor::MoveTo(width - 1, list_start_y + 1 + index as u16), Print("│")).unwrap();
+        execute!(stdout(), cursor::MoveTo(box_width as u16 - 1, list_start_y + 1 + index as u16), Print("│")).unwrap(); // キャスト
     }
-        // ボックスの下端を描画
+    // ボックスの下端を描画
     let box_bottom_y = list_start_y + 1 + branches.len() as u16;
-    execute!(stdout(), cursor::MoveTo(0, box_bottom_y), Print("└"), Print("─".repeat(width as usize - 2)), Print("┘")).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, box_bottom_y), Print("└"), Print("─".repeat(box_width - 2)), Print("┘")).unwrap();
 }
 // ブランチ選択時のアクションを取り扱う関数
 fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
