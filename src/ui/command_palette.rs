@@ -10,9 +10,14 @@ use crate::git_functions;
 
 
 pub fn display_palette(branches: &Vec<String>) -> usize {
+    let graph_lines = git_functions::get_git_tree_graph();
     // セッション生成
     execute!(stdout(), Clear(ClearType::All)).unwrap();
-
+    let padding = 45;
+    for line in &graph_lines {
+        print!("{:padding$}", "", padding = padding);
+        println!("{}", line);
+    }
     move_cursor_to_bottom();  // まずカーソルを一番下に移動
     display_branches(&branches, 0);
     let (init_cursor_x, init_cursor_y) = cursor::position().unwrap();
