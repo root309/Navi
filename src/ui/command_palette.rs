@@ -54,8 +54,8 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
     let list_start_y = (height - branches.len() as u16 - 2).max(0); // 2は上下の罫線の分
 
     // ボックスの上端を描画
-    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(width as usize - 2)), Print("┐")).unwrap();
     execute!(stdout(), cursor::MoveTo(0, list_start_y + 1),SetForegroundColor(Color::Blue)).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(width as usize - 2)), Print("┐")).unwrap();
     for (index, branch) in branches.iter().enumerate() {
         // ブランチの左端
         execute!(stdout(), cursor::MoveTo(0, list_start_y + 1 + index as u16), Print("│")).unwrap();
