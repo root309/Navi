@@ -52,20 +52,22 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
     // ターミナルのサイズを取得
     let (width, height) = crossterm::terminal::size().unwrap();
     let list_start_y = (height - branches.len() as u16 - 2).max(0); // 2は上下の罫線の分
-
-    // ボックスの上端を描画
+    // Boxの色変更
     execute!(stdout(), cursor::MoveTo(0, list_start_y + 1),SetForegroundColor(Color::Blue)).unwrap();
+    // ボックスの上端を描画
     execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(width as usize - 2)), Print("┐")).unwrap();
     for (index, branch) in branches.iter().enumerate() {
-        // ブランチの左端
+        // ボックスの左端
         execute!(stdout(), cursor::MoveTo(0, list_start_y + 1 + index as u16), Print("│")).unwrap();
         if index == current_selection {
-            println!("> {}. {}", index + 1, branch);
+            print!("> {}. {}", index + 1, branch);
         } else {
-            println!("  {}. {}", index + 1, branch);
+            print!("  {}. {}", index + 1, branch);
         }
+        // ボックスの右端
+        execute!(stdout(), cursor::MoveTo(width - 1, list_start_y + 1 + index as u16), Print("│")).unwrap();
     }
-    // ボックスの下端を描画
+        // ボックスの下端を描画
     let box_bottom_y = list_start_y + 1 + branches.len() as u16;
     execute!(stdout(), cursor::MoveTo(0, box_bottom_y), Print("└"), Print("─".repeat(width as usize - 2)), Print("┘")).unwrap();
 }
