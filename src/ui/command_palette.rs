@@ -11,7 +11,7 @@ use crate::git_functions;
 
 pub fn display_palette(branches: &Vec<String>) -> usize {
     // セッション生成
-    //execute!(stdout(), Clear(ClearType::All)).unwrap();
+    execute!(stdout(), Clear(ClearType::All)).unwrap();
 
     move_cursor_to_bottom();  // まずカーソルを一番下に移動
     display_branches(&branches, 0);
