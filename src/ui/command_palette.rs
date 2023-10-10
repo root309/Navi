@@ -82,7 +82,7 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
 }
 // ブランチ選択時のアクションを取り扱う関数
 fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
-    let actions = ["チェックアウト", "ブランチの削除"];
+    let actions = ["checkout branch", "delete branch"];
     let selected_action = display_submenu(&actions);
 
     match selected_action {
@@ -138,7 +138,7 @@ fn display_submenu(options: &[&str]) -> usize {
 
 fn notify_checkout(branch: &str) {
     execute!(stdout(), Clear(ClearType::All)).unwrap();
-    println!("'{}' をチェックアウトしました。Press Enter", branch);
+    println!("checkout '{}' branch. Press Enter", branch);
     read().unwrap();
 }
 // カーソルをターミナルの一番下に移動
