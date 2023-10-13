@@ -105,7 +105,8 @@ fn display_submenu(options: &[&str]) -> usize {
     let mut current_selection = 0;
     let submenu_start_y = 2;
     let box_width = 25;  // サブメニューのボックスの幅
-
+    // Branch Actionsの表示
+    execute!(stdout(), cursor::MoveTo(1, submenu_start_y - 2), Print("Branch Actions")).unwrap();
     loop {
         // ボックスの上端を描画
         execute!(stdout(), cursor::MoveTo(0, submenu_start_y - 1), Print("┌"), Print("─".repeat(box_width - 2)), Print("┐")).unwrap();
