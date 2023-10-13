@@ -103,17 +103,31 @@ fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
 
 fn display_submenu(options: &[&str]) -> usize {
     let mut current_selection = 0;
-    move_cursor_to_bottom();
+    let submenu_start_y = 2;
+    let box_width = 25;  // サブメニューのボックスの幅
+
     loop {
-        execute!(stdout(), Clear(ClearType::All)).unwrap();
+        // ボックスの上端を描画
+        execute!(stdout(), cursor::MoveTo(0, submenu_start_y - 1), Print("┌"), Print("─".repeat(box_width - 2)), Print("┐")).unwrap();
 
         for (index, option) in options.iter().enumerate() {
+            // ボックスの左端
+            execute!(stdout(), cursor::MoveTo(0, submenu_start_y + index as u16), Print("│")).unwrap();
+
             if index == current_selection {
                 println!("> {}. {}", index + 1, option);
             } else {
                 println!("  {}. {}", index + 1, option);
             }
+
+            // ボックスの右端
+            execute!(stdout(), cursor::MoveTo(box_width as u16 - 1, submenu_start_y + index as u16), Print("│")).unwrap();
         }
+
+        // ボックスの下端を描画
+        let box_bottom_y = submenu_start_y + options.len() as u16;
+        execute!(stdout(), cursor::MoveTo(0, box_bottom_y), Print("└"), Print("─".repeat(box_width - 2)), Print("┘")).unwrap();
+
         match read().unwrap() {
             crossterm::event::Event::Key(KeyEvent { code, .. }) => match code {
                 KeyCode::Down => {
@@ -141,8 +155,8 @@ fn notify_checkout(branch: &str) {
     println!("checkout '{}' branch. Press Enter", branch);
     read().unwrap();
 }
-// カーソルをターミナルの一番下に移動
-fn move_cursor_to_bottom() {
-    let (cols, rows) = crossterm::terminal::size().unwrap();
+fn move_cursor_to_bottom() -> u16 {
+    let (_cols, rows) = crossterm::terminal::size().unwrap();
     execute!(stdout(), cursor::MoveTo(0, rows - 1)).unwrap();
+    rows - 1
 }
