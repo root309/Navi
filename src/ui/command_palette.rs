@@ -53,6 +53,7 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
     }
     current_selection
 }
+// BranchList
 fn display_branches(branches: &Vec<String>, current_selection: usize) {
     // ターミナルのサイズを取得
     let (width, height) = crossterm::terminal::size().unwrap();
@@ -102,7 +103,7 @@ fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
 
 fn display_submenu(options: &[&str]) -> usize {
     let mut current_selection = 0;
-
+    move_cursor_to_bottom();
     loop {
         execute!(stdout(), Clear(ClearType::All)).unwrap();
 
@@ -113,7 +114,6 @@ fn display_submenu(options: &[&str]) -> usize {
                 println!("  {}. {}", index + 1, option);
             }
         }
-
         match read().unwrap() {
             crossterm::event::Event::Key(KeyEvent { code, .. }) => match code {
                 KeyCode::Down => {
