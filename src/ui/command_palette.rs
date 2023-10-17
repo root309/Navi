@@ -4,7 +4,7 @@ use crossterm::{
     event::{read, KeyEvent, KeyCode},
     terminal::{Clear, ClearType},
     cursor,
-    style::{Print, SetForegroundColor, Color},
+    style::{Print, SetForegroundColor, Color , SetBackgroundColor},
 };
 use crate::git_functions;
 
@@ -61,11 +61,10 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
     let list_start_y = (height - branches.len() as u16 - 2).max(0); // 2は上下の罫線の分
 
     // Boxの色変更
-    execute!(stdout(), cursor::MoveTo(0, list_start_y + 1), SetForegroundColor(Color::Blue)).unwrap();
-    // "Branch List"の表示
-    execute!(stdout(), cursor::MoveTo(1, list_start_y - 1), Print("Branch List")).unwrap();
+    // 背景色変更メソッド　execute!(stdout(), SetBackgroundColor(Color::Rgb { r: 244, g: 63, b: 94 })).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, list_start_y + 1), SetForegroundColor(Color::Rgb {r:244,g:63,b:94})).unwrap();
     // ボックスの上端を描画
-    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"), Print("─".repeat(box_width - 2)), Print("┐")).unwrap();
+    execute!(stdout(), cursor::MoveTo(0, list_start_y), Print("┌"),Print("─"),Print("Branch List"), Print("─".repeat(box_width - 14)), Print("┐")).unwrap();
     for (index, branch) in branches.iter().enumerate() {
         // ボックスの左端
         execute!(stdout(), cursor::MoveTo(0, list_start_y + 1 + index as u16), Print("│")).unwrap();
@@ -105,11 +104,9 @@ fn display_submenu(options: &[&str]) -> usize {
     let mut current_selection = 0;
     let submenu_start_y = 2;
     let box_width = 25;  // サブメニューのボックスの幅
-    // Branch Actionsの表示
-    execute!(stdout(), cursor::MoveTo(1, submenu_start_y - 2), Print("Branch Actions")).unwrap();
     loop {
         // ボックスの上端を描画
-        execute!(stdout(), cursor::MoveTo(0, submenu_start_y - 1), Print("┌"), Print("─".repeat(box_width - 2)), Print("┐")).unwrap();
+        execute!(stdout(), cursor::MoveTo(0, submenu_start_y - 1), Print("┌"),Print("─"),Print("Branch Actions"), Print("─".repeat(box_width - 17)), Print("┐")).unwrap();
 
         for (index, option) in options.iter().enumerate() {
             // ボックスの左端
