@@ -1,0 +1,9 @@
+services:
+  rust:
+    image: rust:latest
+    volumes:
+      - .:/GitNavi
+    working_dir: /GitNavi
+    environment:
+      - USER=user
+    command: ["cargo", "run"]
