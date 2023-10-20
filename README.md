@@ -11,7 +11,7 @@ Current development progress
 
 # Run
 ```
-git clone https://github.com/root309/TerminalBranchNavigator.git
+git clone https://github.com/root309/GitNavi.git
 ```
 ```
 cd TerminalBranchNavigator
@@ -19,13 +19,7 @@ cd TerminalBranchNavigator
 ```
 cargo build
 ```
+Start the built binary file in the git repository root.
+## Tip
 
-Please write the contents of the user_profile.ps1 file as described in `user_profile example`. By doing so, you will be able to execute the compiled exe file as a command in PowerShell.
-### `user_profile.ps1 example`
-```
-Set-Alias gb 'C:\path\RepositoryDirectory\target\debug\TerminalBranchNavigator.exe'
-```
-Please execute the following command at the root of the repository.
-```
-gb
-```
+Setting up an alias for the built binary (e.g., `.exe` file) can make it easier and quicker to use. Refer to your shell's documentation on how to set aliases for more details.
