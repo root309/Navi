@@ -1,7 +1,14 @@
 ### Now Developing...
 Current development progress
 ![Alt text](image-2.png)
-only debugging in Windows Terminal with PowerShell,CMD.
+
+## Supported Terminals
+
+- tmux (on Linux)
+- bash (on Linux)
+- PowerShell (on Windows Terminal)
+- CMD (on Windows Terminal)
+
 # Run
 ```
 git clone https://github.com/root309/TerminalBranchNavigator.git
