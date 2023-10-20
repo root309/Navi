@@ -14,7 +14,7 @@ Current development progress
 git clone https://github.com/root309/GitNavi.git
 ```
 ```
-cd TerminalBranchNavigator
+cd GitNavi
 ```
 ```
 cargo build
