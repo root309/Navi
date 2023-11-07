@@ -26,11 +26,11 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
     loop {
         match read().unwrap() {
             crossterm::event::Event::Key(KeyEvent { code, .. }) => match code {
-                KeyCode::Down => {
+                KeyCode::Char('j') => {
                     current_selection = (current_selection + 1) % branches.len();
                     display_branches(&branches, current_selection);
                 }
-                KeyCode::Up => {
+                KeyCode::Char('k') => {
                     current_selection = if current_selection == 0 {
                         branches.len() - 1
                     } else {
@@ -142,10 +142,10 @@ fn display_submenu(options: &[&str]) -> usize {
 
         match read().unwrap() {
             crossterm::event::Event::Key(KeyEvent { code, .. }) => match code {
-                KeyCode::Down => {
+                KeyCode::Char('j') => {
                     current_selection = (current_selection + 1) % options.len();
                 }
-                KeyCode::Up => {
+                KeyCode::Char('k') => {
                     current_selection = if current_selection == 0 {
                         options.len() - 1
                     } else {
