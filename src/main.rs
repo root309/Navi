@@ -10,7 +10,7 @@ use crossterm::{
 };
 
 fn main() {
-<<<<<<< HEAD
+    enable_raw_mode().unwrap();
     let local_branches = git_ops::list_branches();
     let remote_branches = git_ops::list_remote_branches();
     let mut all_branches = local_branches;
@@ -18,12 +18,10 @@ fn main() {
     let selected_index = ui::display_palette(&all_branches);
     // ユーザーがEnterを押した後に画面をクリア
     execute!(stdout(), Clear(ClearType::All)).unwrap(); 
-=======
     enable_raw_mode().unwrap();
     let branches = git_ops::list_branches();
     let selected_index = ui::display_palette(&branches);
     // ユーザーがEnterを押した後に画面をクリア
     execute!(stdout(), Clear(ClearType::All)).unwrap();
     disable_raw_mode().unwrap();
->>>>>>> 964c3007511db3222ba18f53c4cb8763e84f9b5d
 }
