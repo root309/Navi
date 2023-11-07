@@ -82,10 +82,24 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
 }
 // ブランチ選択時のアクションを取り扱う関数
 fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
-    let actions = ["checkout branch", "delete branch"];
+    let is_remote = branches[selected_index].contains("/");
+    let branch_name = if is_remote {
+        let parts: Vec<&str> = branches[selected_index].split('/').collect();
+        parts.last().unwrap().to_string()
+    } else {
+        branches[selected_index].clone()
+    };
+    let actions = if is_remote {
+        vec!["create local tracking branch", "delete remote branch"]
+    } else {
+        vec!["checkout branch", "delete branch"]
+    };
     let selected_action = display_submenu(&actions);
 
     match selected_action {
+        1 if is_remote => {
+            git_functions::create_tracking_branch(&branch_name, &branches[selected_index]);
+        }
         1 => {
             if let Err(e) = git_functions::checkout_branch(&branches[selected_index]) {
                 println!("エラー: {}", e);

@@ -10,8 +10,11 @@ use crossterm::{
 };
 
 fn main() {
-    let branches = git_ops::list_branches();
-    let selected_index = ui::display_palette(&branches);
+    let local_branches = git_ops::list_branches();
+    let remote_branches = git_ops::list_remote_branches();
+    let mut all_branches = local_branches;
+    all_branches.extend(remote_branches.iter().cloned());
+    let selected_index = ui::display_palette(&all_branches);
     // ユーザーがEnterを押した後に画面をクリア
-    execute!(stdout(), Clear(ClearType::All)).unwrap();
+    execute!(stdout(), Clear(ClearType::All)).unwrap(); 
 }

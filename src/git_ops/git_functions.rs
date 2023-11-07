@@ -7,6 +7,11 @@ pub fn list_branches() -> Vec<String> {
     let branches = repo.branches(Some(BranchType::Local)).unwrap();
     branches.map(|b| b.unwrap().0.name().unwrap().unwrap().to_string()).collect()
 }
+pub fn list_remote_branches() -> Vec<String> {
+    let repo = Repository::open(".").unwrap();
+    let branches = repo.branches(Some(BranchType::Remote)).unwrap();
+    branches.map(|b| b.unwrap().0.name().unwrap().unwrap().replace("refs/remotes/", "")).collect()
+}
 // ブランチチェックアウト
 pub fn checkout_branch(branch_name: &str) -> Result<(), git2::Error> {
     let repo = Repository::open(".")?;
@@ -32,3 +37,12 @@ pub fn get_git_tree_graph() -> Vec<String> {
     let output_str = String::from_utf8_lossy(&output.stdout);
     output_str.lines().map(|line| line.to_string()).collect()
 }
+// ローカルに追跡ブランチを作成する関数
+pub fn create_tracking_branch(local_branch_name: &str, remote_branch_name: &str) -> Result<(), git2::Error> {
+    let repo = Repository::open(".")?;
+    let remote_branch = repo.find_branch(remote_branch_name, BranchType::Remote)?;
+    let commit = remote_branch.into_reference().peel_to_commit()?; // referenceが最終的に指すCommitオブジェクト
+    repo.branch(local_branch_name, &commit, false)?;
+    Ok(())
+}
+
