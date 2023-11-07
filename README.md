@@ -1,6 +1,4 @@
-### Now Developing...
-Current development progress
-![Alt text](image-2.png)
+### Now Developing
 
 ## Supported Terminals
 
