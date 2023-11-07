@@ -45,4 +45,15 @@ pub fn create_tracking_branch(local_branch_name: &str, remote_branch_name: &str)
     repo.branch(local_branch_name, &commit, false)?;
     Ok(())
 }
+pub fn git_fetch_prune() -> Result<(), std::io::Error> {
+    let status = Command::new("git")
+        .args(&["fetch", "--prune"])
+        .status()?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(std::io::Error::new(std::io::ErrorKind::Other, "git fetch --prune failed"))
+    }
+}
 

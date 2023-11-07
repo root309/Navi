@@ -10,6 +10,10 @@ use crossterm::{
 };
 
 fn main() {
+    // リモートブランチのプルーン
+    //if let Err(e) = git_functions::git_fetch_prune() {
+        //eprintln!("Error pruning remote branches: {}", e);
+    //}
     enable_raw_mode().unwrap();
     let local_branches = git_ops::list_branches();
     let remote_branches = git_ops::list_remote_branches();
