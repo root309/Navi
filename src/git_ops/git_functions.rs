@@ -1,6 +1,35 @@
-use git2::{Repository, BranchType};
+use git2::{Repository, BranchType, Commit, Oid, Error as Git2Error};
 use std::process::Command;
+use std::io;
+use dialoguer::{Select, Input};
+use std::fmt;
 
+// エラー型を統合
+#[derive(Debug)]
+pub enum Error {
+    Git(Git2Error),
+    Io(io::Error),
+}
+
+impl From<Git2Error> for Error {
+    fn from(err: Git2Error) -> Self {
+        Error::Git(err)
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Error::Io(err)
+    }
+}
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Error::Git(err) => write!(f, "Git error: {}", err),
+            Error::Io(err) => write!(f, "IO error: {}", err),
+        }
+    }
+}
 // ブランチリスト
 pub fn list_branches() -> Vec<String> {
     let repo = Repository::open(".").unwrap();
@@ -56,4 +85,41 @@ pub fn git_fetch_prune() -> Result<(), std::io::Error> {
         Err(std::io::Error::new(std::io::ErrorKind::Other, "git fetch --prune failed"))
     }
 }
+pub fn create_branch_from_commit_interactive() -> Result<(), Error> {
+    let repo = Repository::open(".")?;
 
+    let commits = get_commits(&repo)?;
+
+    let selections: Vec<String> = commits.iter()
+        .map(|commit| format!("{} - {}", commit.id(), commit.summary().unwrap_or("<no summary>")))
+        .collect();
+
+    let selection = Select::new()
+        .with_prompt("Pick a commit to create a branch from")
+        .default(0)
+        .items(&selections[..])
+        .interact()?;
+
+    let branch_name: String = Input::new()
+        .with_prompt("Enter new branch name")
+        .interact_text()?;
+
+    let commit = &commits[selection];
+    repo.branch(&branch_name, &commit, false)?;
+
+    println!("Branch '{}' created from commit '{}'", branch_name, commit.id());
+    Ok(())
+}
+
+// コミットのVecを取得する関数
+fn get_commits(repo: &Repository) -> Result<Vec<Commit>, Git2Error> {
+    let mut revwalk = repo.revwalk()?;
+    revwalk.push_head()?;
+    revwalk.set_sorting(git2::Sort::TIME)?;
+
+    let commits: Result<Vec<_>, _> = revwalk
+        .map(|id| id.and_then(|id| repo.find_commit(id)))
+        .collect();
+
+    commits
+}
