@@ -1,7 +1,14 @@
 use git2::{Repository, BranchType, Commit, Oid, Error as Git2Error};
 use std::process::Command;
+use crossterm::{
+    style::Print,
+    cursor::{MoveTo, Show, Hide},
+    execute,
+    event::{read, Event, KeyCode},
+    terminal::{enable_raw_mode, disable_raw_mode, Clear, ClearType},
+};
 use std::io;
-use dialoguer::{Select, Input};
+use std::io::{stdout, Write, stdin};
 use std::fmt;
 
 // エラー型を統合
@@ -30,6 +37,7 @@ impl fmt::Display for Error {
         }
     }
 }
+
 // ブランチリスト
 pub fn list_branches() -> Vec<String> {
     let repo = Repository::open(".").unwrap();
@@ -85,29 +93,86 @@ pub fn git_fetch_prune() -> Result<(), std::io::Error> {
         Err(std::io::Error::new(std::io::ErrorKind::Other, "git fetch --prune failed"))
     }
 }
+
+
 pub fn create_branch_from_commit_interactive() -> Result<(), Error> {
     let repo = Repository::open(".")?;
-
     let commits = get_commits(&repo)?;
-
     let selections: Vec<String> = commits.iter()
         .map(|commit| format!("{} - {}", commit.id(), commit.summary().unwrap_or("<no summary>")))
         .collect();
 
-    let selection = Select::new()
-        .with_prompt("Pick a commit to create a branch from")
-        .default(0)
-        .items(&selections[..])
-        .interact()?;
+    enable_raw_mode()?;
+    let mut stdout = stdout();
+    execute!(stdout, Hide)?;
 
-    let branch_name: String = Input::new()
-        .with_prompt("Enter new branch name")
-        .interact_text()?;
+    let mut selected = 0;
+    // 表示範囲の開始位置を追加
+    let mut start_index = 0;
+    let display_count = 20; // 一度に表示するコミット数
 
-    let commit = &commits[selection];
+    loop {
+        execute!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+
+        // 表示するコミットの範囲を決定
+        let end_index = std::cmp::min(start_index + display_count, selections.len());
+
+        // コミットのリスト表示
+        for (index, selection) in selections[start_index..end_index].iter().enumerate() {
+            let display_index = start_index + index;
+            execute!(stdout, MoveTo(0, display_index as u16))?; // カーソルを適切な位置に移動
+            if display_index == selected {
+                execute!(stdout, Print(format!("> {}\n", selection)))?; // Printコマンドを使用
+            } else {
+                execute!(stdout, Print(format!("  {}\n", selection)))?; // Printコマンドを使用
+            }
+        }
+        stdout.flush()?;
+
+        // キー入力処理
+        match read()? {
+            Event::Key(event) => {
+                match event.code {
+                    KeyCode::Char('j') => {
+                        if selected > 0 {
+                            selected -= 1;
+                        }
+                        // スクロール処理
+                        if selected < start_index {
+                            start_index = selected;
+                        }
+                    },
+                    KeyCode::Char('k') => {
+                        if selected < selections.len() - 1 {
+                            selected += 1;
+                        }
+                        // スクロール処理
+                        if selected >= end_index {
+                            start_index = selected - display_count + 1;
+                        }
+                    },
+                    KeyCode::Enter => break,
+                    _ => (),
+                }
+            }
+            _ => (),
+        }
+    }
+
+    disable_raw_mode()?;
+    execute!(stdout, Show)?;
+
+    let commit = &commits[selected];
+    println!("Pick a commit to create a branch from: '{}'", commit.id());
+
+    println!("Enter new branch name: ");
+    let mut branch_name = String::new();
+    stdin().read_line(&mut branch_name)?;
+    branch_name = branch_name.trim().to_string();
+
     repo.branch(&branch_name, &commit, false)?;
-
     println!("Branch '{}' created from commit '{}'", branch_name, commit.id());
+
     Ok(())
 }
 
