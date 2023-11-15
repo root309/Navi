@@ -4,6 +4,4 @@ services:
     volumes:
       - .:/GitNavi
     working_dir: /GitNavi
-    environment:
-      - USER=user
     command: ["cargo", "run"]
