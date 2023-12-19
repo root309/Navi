@@ -43,8 +43,8 @@ fn main() -> crossterm::Result<()> {
         match read()? {
             Event::Key(event) => {
                 match event.code {
-                    KeyCode::Char('j') => if selected > 0 { selected -= 1 },
-                    KeyCode::Char('k') => if selected < actions.len() - 1 { selected += 1 },
+                    KeyCode::Char('k') => if selected > 0 { selected -= 1 },
+                    KeyCode::Char('j') => if selected < actions.len() - 1 { selected += 1 },
                     KeyCode::Enter => break,
                     _ => (),
                 }

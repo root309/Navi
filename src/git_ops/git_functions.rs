@@ -133,7 +133,7 @@ pub fn create_branch_from_commit_interactive() -> Result<(), Error> {
         match read()? {
             Event::Key(event) => {
                 match event.code {
-                    KeyCode::Char('j') => {
+                    KeyCode::Char('k') => {
                         if selected > 0 {
                             selected -= 1;
                         }
@@ -142,7 +142,7 @@ pub fn create_branch_from_commit_interactive() -> Result<(), Error> {
                             start_index = selected;
                         }
                     },
-                    KeyCode::Char('k') => {
+                    KeyCode::Char('j') => {
                         if selected < selections.len() - 1 {
                             selected += 1;
                         }
