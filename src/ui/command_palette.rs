@@ -15,8 +15,8 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
     execute!(stdout(), Clear(ClearType::All)).unwrap();
     let padding = 45; // 樹形図のpadding
     for line in &graph_lines {
-        print!("{:padding$}", "", padding = padding);
-        println!("{}", line);
+        //print!("{:padding$}", "", padding = padding);
+        //println!("{}", line);
     }
     move_cursor_to_bottom();  // まずカーソルを一番下に移動
     display_branches(&branches, 0);
