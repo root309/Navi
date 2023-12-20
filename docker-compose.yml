@@ -2,6 +2,6 @@ services:
   rust:
     image: rust:latest
     volumes:
-      - .:/GitNavi
-    working_dir: /GitNavi
+      - .:/Navi
+    working_dir: /Navi
     command: ["cargo", "run"]
