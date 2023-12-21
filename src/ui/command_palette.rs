@@ -8,7 +8,7 @@ use crossterm::{
     },
     cursor,
     cursor::{Show},
-    style::{Print, SetForegroundColor, Color , SetBackgroundColor},
+    style::{Print, SetForegroundColor, Color, SetBackgroundColor, ResetColor},
 };
 use crate::git_functions;
 
@@ -43,9 +43,9 @@ pub fn display_palette(branches: &Vec<String>) -> usize {
                     display_branches(&branches, current_selection);
                 }
                 KeyCode::Enter => {
-                    handle_branch_selection(current_selection, branches);
+                    let selection_result = handle_branch_selection(current_selection, branches);
                     execute!(stdout(), cursor::MoveTo(init_cursor_x, init_cursor_y)).unwrap();
-                    return current_selection;
+                    return selection_result;  // handle_branch_selectionからの戻り値を返す
                 }
                 KeyCode::Char('q') => {
                     break;
@@ -85,7 +85,7 @@ fn display_branches(branches: &Vec<String>, current_selection: usize) {
     execute!(stdout(), cursor::MoveTo(0, box_bottom_y), Print("└"), Print("─".repeat(box_width - 2)), Print("┘")).unwrap();
 }
 // ブランチ選択時のアクションを取り扱う関数
-fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
+fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) -> usize {
     let is_remote = branches[selected_index].contains("/");
     let branch_name = if is_remote {
         let parts: Vec<&str> = branches[selected_index].split('/').collect();
@@ -116,6 +116,8 @@ fn handle_branch_selection(selected_index: usize, branches: &Vec<String>) {
         }
         _ => {}
     }
+    execute!(stdout(), ResetColor).unwrap(); // テキストの色をリセット
+    usize::MAX
 }
 
 fn display_submenu(options: &[&str]) -> usize {
