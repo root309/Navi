@@ -15,6 +15,7 @@ use crossterm::{
     },
 };
 use std::io::{stdout, Write};
+use std::process;
 
 fn main() -> crossterm::Result<()> {
     enable_raw_mode().unwrap();
@@ -46,6 +47,15 @@ fn main() -> crossterm::Result<()> {
                     KeyCode::Char('k') => if selected > 0 { selected -= 1 },
                     KeyCode::Char('j') => if selected < actions.len() - 1 { selected += 1 },
                     KeyCode::Enter => break,
+                    KeyCode::Char('q') => {
+                        disable_raw_mode().unwrap();
+                        execute!(
+                            stdout,
+                            LeaveAlternateScreen,
+                            Show
+                        ).unwrap();
+                        std::process::exit(0);
+                    }
                     _ => (),
                 }
             }

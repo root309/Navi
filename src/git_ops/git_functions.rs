@@ -5,11 +5,15 @@ use crossterm::{
     cursor::{MoveTo, Show, Hide},
     execute,
     event::{read, Event, KeyCode},
-    terminal::{enable_raw_mode, disable_raw_mode, Clear, ClearType},
+    terminal::{
+        enable_raw_mode, disable_raw_mode, Clear, ClearType, EnterAlternateScreen,
+        LeaveAlternateScreen,
+    },
 };
 use std::io;
 use std::io::{stdout, Write, stdin};
 use std::fmt;
+use std::process;
 
 // エラー型を統合
 #[derive(Debug)]
@@ -152,6 +156,15 @@ pub fn create_branch_from_commit_interactive() -> Result<(), Error> {
                         }
                     },
                     KeyCode::Enter => break,
+                    KeyCode::Char('q') => {
+                        disable_raw_mode().unwrap();
+                        execute!(
+                            stdout,
+                            LeaveAlternateScreen,
+                            Show
+                        ).unwrap();
+                        std::process::exit(0);
+                    }
                     _ => (),
                 }
             }

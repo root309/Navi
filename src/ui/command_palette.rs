@@ -2,8 +2,12 @@ use std::io::stdout;
 use crossterm::{
     execute,
     event::{read, KeyEvent, KeyCode},
-    terminal::{Clear, ClearType},
+    terminal::{
+        enable_raw_mode, disable_raw_mode, Clear, ClearType, EnterAlternateScreen,
+        LeaveAlternateScreen,
+    },
     cursor,
+    cursor::{Show},
     style::{Print, SetForegroundColor, Color , SetBackgroundColor},
 };
 use crate::git_functions;
@@ -154,6 +158,15 @@ fn display_submenu(options: &[&str]) -> usize {
                 }
                 KeyCode::Enter => {
                     return current_selection + 1;
+                }
+                KeyCode::Char('q') => {
+                    disable_raw_mode().unwrap();
+                    execute!(
+                        stdout(),
+                        LeaveAlternateScreen,
+                        Show
+                    ).unwrap();
+                    std::process::exit(0);
                 }
                 _ => {}
             },
