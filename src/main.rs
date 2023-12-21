@@ -21,7 +21,7 @@ fn main() -> crossterm::Result<()> {
     enable_raw_mode().unwrap();
 
     let mut stdout = stdout();
-    execute!(stdout, Hide)?; // カーソルを隠す
+    execute!(stdout, EnterAlternateScreen, Hide)?; // 代替スクリーンを開始し、カーソルを隠す
 
     let actions = ["List and select branches", "Create branch from a commit"];
     let mut selected = 0;
@@ -51,7 +51,7 @@ fn main() -> crossterm::Result<()> {
                         disable_raw_mode().unwrap();
                         execute!(
                             stdout,
-                            LeaveAlternateScreen,
+                            LeaveAlternateScreen, // 代替スクリーンを終了
                             Show
                         ).unwrap();
                         std::process::exit(0);
@@ -80,7 +80,7 @@ fn main() -> crossterm::Result<()> {
         _ => unreachable!(),
     }
 
-    execute!(stdout, Show)?; // カーソルを表示
+    execute!(stdout, LeaveAlternateScreen, Show)?; // 代替スクリーンを終了し、カーソルを表示
     disable_raw_mode().unwrap();
     Ok(())
 }
